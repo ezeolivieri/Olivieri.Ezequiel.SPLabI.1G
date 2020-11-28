@@ -1,0 +1,41 @@
+# depslib dependency file v1.0
+1606522842 source:/home/ezequielo/Escritorio/Olivieri.Ezequiel.SPLabI.1G/SegundoParcialLabo1/main.c
+	<stdio.h>
+	<stdlib.h>
+	<ctype.h>
+	<string.h>
+	<stdio_ext.h>
+	"ePais.h"
+	"LinkedList.h"
+	"Controller.h"
+	<time.h>
+
+1606523348 source:/home/ezequielo/Escritorio/Olivieri.Ezequiel.SPLabI.1G/SegundoParcialLabo1/Controller.c
+	<stdio.h>
+	<stdio_ext.h>
+	<stdlib.h>
+	<string.h>
+	<ctype.h>
+	"Controller.h"
+	"LinkedList.h"
+	"ePais.h"
+
+1606523565 /home/ezequielo/Escritorio/Olivieri.Ezequiel.SPLabI.1G/SegundoParcialLabo1/LinkedList.h
+
+1606519392 /home/ezequielo/Escritorio/Olivieri.Ezequiel.SPLabI.1G/SegundoParcialLabo1/ePais.h
+
+1606521768 /home/ezequielo/Escritorio/Olivieri.Ezequiel.SPLabI.1G/SegundoParcialLabo1/Controller.h
+	"LinkedList.h"
+
+1606523548 source:/home/ezequielo/Escritorio/Olivieri.Ezequiel.SPLabI.1G/SegundoParcialLabo1/LinkedList.c
+	<stdio.h>
+	<stdlib.h>
+	<string.h>
+	"LinkedList.h"
+
+1606521187 source:/home/ezequielo/Escritorio/Olivieri.Ezequiel.SPLabI.1G/SegundoParcialLabo1/ePais.c
+	<stdio.h>
+	<stdlib.h>
+	<string.h>
+	"ePais.h"
+

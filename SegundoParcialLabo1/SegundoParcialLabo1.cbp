@@ -31,6 +31,19 @@
 		<Compiler>
 			<Add option="-Wall" />
 		</Compiler>
+		<Unit filename="../../../Descargas/pandemia.csv" />
+		<Unit filename="Controller.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="Controller.h" />
+		<Unit filename="LinkedList.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="LinkedList.h" />
+		<Unit filename="ePais.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="ePais.h" />
 		<Unit filename="main.c">
 			<Option compilerVar="CC" />
 		</Unit>

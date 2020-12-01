@@ -2,8 +2,9 @@
 #include <stdlib.h>
 #include <string.h>
 #include "ePais.h"
+#include "Controller.h"
 
-ePais* pais_new()
+ePais* ePais_new()
 {
     ePais* nuevoPais = (ePais*) malloc(sizeof(ePais));
 
@@ -19,9 +20,9 @@ ePais* pais_new()
     return nuevoPais;
 }
 
-ePais* pais_newParametrosChar(char* id, char* name, char* recuperados, char* infectados, char* muertos)
+ePais* ePais_newParametros(char* id, char* name, char* recuperados, char* infectados, char* muertos)
 {
-    ePais* nuevoPais = pais_new();
+    ePais* nuevoPais = ePais_new();
 
     if( nuevoPais != NULL )
     {
@@ -53,7 +54,7 @@ int ePais_setId(ePais* this,int id)
 {
     int todoOk = 0;
 
-    if( this != NULL && id > 0)
+    if( this != NULL )
     {
         this->id = id;
         todoOk = 1;
@@ -78,7 +79,7 @@ int ePais_setNombre(ePais* this,char* nombre)
 {
     int todoOk = 0;
 
-    if( this != NULL && nombre != NULL && strlen(nombre) > 3 )
+    if( this != NULL && nombre != NULL )
     {
         strcpy(this->nombre, nombre);
         todoOk = 1;
@@ -103,7 +104,7 @@ int ePais_setRecuperados(ePais* this,int recuperados)
 {
     int todoOk = 0;
 
-    if( this != NULL && recuperados > 0 )
+    if( this != NULL )
     {
         this->recuperados = recuperados;
         todoOk = 1;
@@ -128,7 +129,7 @@ int ePais_setInfectados(ePais* this,int infectados)
 {
     int todoOk = 0;
 
-    if( this != NULL && infectados > 0 )
+    if( this != NULL )
     {
         this->infectados = infectados;
         todoOk = 1;
@@ -153,7 +154,7 @@ int ePais_setMuertos(ePais* this,int muertos)
 {
     int todoOk = 0;
 
-    if( this != NULL && muertos > 0 )
+    if( this != NULL )
     {
         this->muertos = muertos;
         todoOk = 1;
@@ -174,7 +175,7 @@ int ePais_getMuertos(ePais* this,int* muertos)
     return todoOk;
 }
 
-int printPais(ePais* pais)
+int printePais(ePais* pePais)
 {
     int todoOk = 0;
     int idAux;
@@ -183,23 +184,103 @@ int printPais(ePais* pais)
     int infectadosAux;
     int muertosAux;
 
-    if( pais != NULL )
+    if( pePais != NULL )
     {
-        if( ePais_getId(pais,&idAux) &&
-            ePais_getNombre(pais,nameAux) &&
-            ePais_getRecuperados(pais,&recuperadosAux) &&
-            ePais_getInfectados(pais,&infectadosAux) &&
-            ePais_getMuertos(pais, &muertosAux) )
+        if( ePais_getId(pePais,&idAux) &&
+            ePais_getNombre(pePais,nameAux) &&
+            ePais_getRecuperados(pePais,&recuperadosAux) &&
+            ePais_getInfectados(pePais,&infectadosAux) &&
+            ePais_getMuertos(pePais, &muertosAux) )
         {
-            printf("%8d %15s %8d %8d %8d\n",idAux,nameAux,recuperadosAux,infectadosAux,muertosAux);
+            printf("%6d %20s    %10d       %10d    %10d\n",idAux,nameAux,recuperadosAux, infectadosAux, muertosAux);
         }
         else
         {
-            printf("Error intentando obtener los datos del pais.\n");
+            printf("Error intentando obtener los datos del PAIS.\n");
         }
 
         todoOk = 1;
     }
 
     return todoOk;
+}
+
+void* ePais_setRandomValues(void* pePais)
+{
+    int recuperadosAux;
+    int infectadosAux;
+    int muertosAux;
+
+    if( pePais != NULL )
+    {
+        recuperadosAux = getRandom(5000, 10000);
+        infectadosAux = getRandom(4000, 20000);
+        muertosAux = getRandom(1000, 50000);
+
+        ePais_setRecuperados( (ePais*) pePais, recuperadosAux );
+        ePais_setInfectados( (ePais*) pePais, infectadosAux );
+        ePais_setMuertos( (ePais*) pePais, muertosAux );
+    }
+
+    return pePais;
+}
+
+int ePais_getPaisExitoso(void* pePais)
+{
+    int muertosAux;
+
+    if( pePais != NULL )
+    {
+        ePais_getMuertos( (ePais*) pePais, &muertosAux );
+
+        if( muertosAux < 5000 )
+        {
+            return 1;
+        }
+    }
+
+    return 0;
+}
+
+int ePais_getPaisEnElHorno(void* pePais)
+{
+    int infectadosAux;
+    int recuperadosAux;
+
+    if( pePais != NULL )
+    {
+        ePais_getInfectados( (ePais*) pePais, &infectadosAux );
+        ePais_getRecuperados( (ePais*) pePais, &recuperadosAux );
+
+        if( (recuperadosAux * 3) <= infectadosAux )
+        {
+            return 1;
+        }
+    }
+
+    return 0;
+}
+
+int ePais_sortByInfected(void* pePaisUno, void* pePaisDos)
+{
+    int infectadosAuxUno;
+    int infectadosAuxDos;
+
+    if( pePaisUno != NULL && pePaisDos != NULL )
+    {
+        ePais_getInfectados( (ePais*) pePaisUno, &infectadosAuxUno );
+        ePais_getInfectados( (ePais*) pePaisDos, &infectadosAuxDos );
+
+        if( infectadosAuxUno > infectadosAuxDos )
+        {
+            return 1;
+        }
+
+        if( infectadosAuxDos > infectadosAuxUno )
+        {
+            return -1;
+        }
+    }
+
+    return 0;
 }

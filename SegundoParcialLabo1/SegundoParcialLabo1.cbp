@@ -31,7 +31,6 @@
 		<Compiler>
 			<Add option="-Wall" />
 		</Compiler>
-		<Unit filename="../../../Descargas/pandemia.csv" />
 		<Unit filename="Controller.c">
 			<Option compilerVar="CC" />
 		</Unit>

@@ -1,8 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
 #include "LinkedList.h"
-
 
 static Node* getNode(LinkedList* this, int nodeIndex);
 static int addNode(LinkedList* this, int nodeIndex,void* pElement);
@@ -69,7 +67,6 @@ static Node* getNode(LinkedList* this, int nodeIndex)
     return pNode;
 }
 
-
 /** \brief Agrega y enlaza un nuevo nodo a la lista
  *
  * \param this LinkedList* Puntero a la lista
@@ -121,7 +118,6 @@ static int addNode(LinkedList* this, int nodeIndex, void* pElement)
 
     return returnAux;
 }
-
 
 /** \brief  Agrega un elemento a la lista
  * \param pList LinkedList* Puntero a la lista
@@ -506,6 +502,7 @@ int ll_sort(LinkedList* this, int (*pFunc)(void* ,void*), int order)
 
 }
 
+
 /** \brief Retorna una nueva lista con los elementos que hacen que pFunc retorne 1
  *
  * \param this Lista a filtrar
@@ -543,3 +540,37 @@ LinkedList* ll_filter(LinkedList* this, int(*pFunc)(void*))
 }
 
 
+/** \brief
+ *
+ * \param this Lista a filtrar
+ * \param pFunc Funcion que sabe asignar a cada elemento de this
+ * \return LinkedList* Retorna  (NULL) Error: si el puntero a la lista es NULL, o si pFunc es NULL, o si pElement es NULL
+                                (puntero a la nueva lista) Si ok
+ *
+ */
+LinkedList* ll_map (LinkedList* this, void*(*pFunc) (void* pElement))
+{
+    LinkedList* listaMapeada = NULL;
+    void* elementAux = NULL;
+    int arrayLen;
+
+    if( this != NULL && pFunc != NULL )
+    {
+        listaMapeada = ll_newLinkedList();
+
+        if( listaMapeada != NULL )
+        {
+            arrayLen = ll_len(this);
+
+            for( int i = 0; i < arrayLen; i++ )
+            {
+                elementAux = ll_get(this, i);
+                elementAux = pFunc(elementAux);
+
+                ll_add( listaMapeada, elementAux );
+            }
+        }
+    }
+
+    return listaMapeada;
+}

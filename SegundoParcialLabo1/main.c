@@ -3,10 +3,10 @@
 #include <ctype.h>
 #include <string.h>
 #include <stdio_ext.h>
-#include "ePais.h"
-#include "LinkedList.h"
-#include "Controller.h"
 #include <time.h>
+#include "LinkedList.h"
+#include "ePais.h"
+#include "Controller.h"
 
 
 
@@ -43,22 +43,18 @@ int getCadena(char* cadena, char* mensajePedir);
 
 
 
-
+/****************** FUNCION MAIN ********************/
 int main()
 {
-    // FUNCION GET RANDOM
-
-    // srand(time(NULL));
-    // int aleatorio;
-
-    // aleatorio = rand()%(a + 1)+b;
+    srand(time(NULL));
 
     int option = 0;
     char confirmaSalir = 'N';
-    char nombreArchivo[100];
+    char path[100];
 
     LinkedList* listaPaises = ll_newLinkedList();
-
+    LinkedList* paisesExitosos = ll_newLinkedList();
+    LinkedList* paisesEnElHorno = ll_newLinkedList();
 
 
 
@@ -73,15 +69,15 @@ int main()
             case 1:
                 system("clear");
 
-                getCadena(nombreArchivo, "Ingrese el nombre del archivo: ");
+                getCadena(path, "Ingrese nombre del archivo: ");
 
-                if( !(controller_loadFromText(nombreArchivo,listaPaises)) )
+                if( !controller_loadFromText(path, listaPaises) )
                 {
-                    printf("\n\n\n      Paises cargados desde archivo de texto con exito!.\n\n\n");
+                    printf("\n\nARCHIVO CARGADO CON EXITO.\n\n");
                 }
                 else
                 {
-                    printf("\n\n\n      Ha ocurrido un error.\n\n\n");
+                    printf("\n\nOCURRIO UN ERROR AL CARGAR EL ARCHIVO.\n\n");
                 }
                 break;
 
@@ -89,37 +85,107 @@ int main()
                 system("clear");
                 if( !ll_isEmpty(listaPaises) )
                 {
-                    controller_listPais(listaPaises);
+                    controller_ListePais(listaPaises);
                 }
                 else
                 {
-                    printf("\n\nNO HAY PAISES CARGADOS EN EL SISTEMA.\n\n");
+                    printf("\n\nNO HAY INFORMACION CARGADA EN EL SISTEMA\n\n");
                 }
                 break;
 
             case 3:
                 system("clear");
-
+                if( !ll_isEmpty(listaPaises) )
+                {
+                    ll_map(listaPaises, ePais_setRandomValues);
+                    printf("\n\n\n    =======> LISTA ACTUALIZADA CON VALORES SETEADOS <======== \n\n\n");
+                    controller_ListePais(listaPaises);
+                }
+                else
+                {
+                    printf("\n\nNO HAY INFORMACION CARGADA EN EL SISTEMA\n\n");
+                }
                 break;
 
             case 4:
                 system("clear");
+                if( !ll_isEmpty(listaPaises) )
+                {
+                    paisesExitosos = ll_filter(listaPaises, ePais_getPaisExitoso);
 
+                    printf("\n\n\n    =======> LISTA DE PAISES EXITOSOS <======== \n\n\n");
+                    controller_ListePais(paisesExitosos);
+                    printf("\n\n\n");
+
+                    if( !controller_saveAsText("paisesExitosos.csv", paisesExitosos) )
+                    {
+                        printf("ARCHIVO paisesExitosos.csv GENERADO CORRECTAMENTE.\n\n");
+                    }
+                    else
+                    {
+                        printf("SE PRODUJO UN ERROR GENERANDO EL ARCHIVO paisesExitosos.csv\n\n");
+                    }
+                }
+                else
+                {
+                    printf("\n\nNO HAY INFORMACION CARGADA EN EL SISTEMA\n\n");
+                }
                 break;
 
             case 5:
                 system("clear");
+                if( !ll_isEmpty(listaPaises) )
+                {
+                    paisesEnElHorno = ll_filter(listaPaises, ePais_getPaisEnElHorno);
 
+                    printf("\n\n\n    =======> LISTA DE PAISES EN EL HORNO <======== \n\n\n");
+                    controller_ListePais(paisesEnElHorno);
+                    printf("\n\n\n");
+
+                    if( !controller_saveAsText("paisesEnElHorno.csv", paisesEnElHorno) )
+                    {
+                        printf("ARCHIVO paisesEnElHorno.csv GENERADO CORRECTAMENTE.\n\n");
+                    }
+                    else
+                    {
+                        printf("SE PRODUJO UN ERROR GENERANDO EL ARCHIVO paisesEnElHorno.csv\n\n");
+                    }
+                }
+                else
+                {
+                    printf("\n\nNO HAY INFORMACION CARGADA EN EL SISTEMA\n\n");
+                }
                 break;
 
             case 6:
                 system("clear");
-
+                if( !ll_isEmpty(listaPaises) )
+                {
+                    if( !ll_sort(listaPaises,ePais_sortByInfected,0) )
+                    {
+                        printf("\n\nSE ORDENO CORRECTAMENTE\n\n");
+                    }
+                    else
+                    {
+                        printf("\n\nSE PRODUJO UN ERROR AL INTENTAR ORDENAR\n\n");
+                    }
+                }
+                else
+                {
+                    printf("\n\nNO HAY INFORMACION CARGADA EN EL SISTEMA\n\n");
+                }
                 break;
 
             case 7:
                 system("clear");
-
+                if( !ll_isEmpty(listaPaises) )
+                {
+                    controller_getMasCastigados(listaPaises);
+                }
+                else
+                {
+                    printf("\n\nNO HAY INFORMACION CARGADA EN EL SISTEMA\n\n");
+                }
                 break;
 
             case 8:
@@ -212,3 +278,4 @@ int getCadena(char* cadena, char* mensajePedir)
 
     return todoOk;
 }
+

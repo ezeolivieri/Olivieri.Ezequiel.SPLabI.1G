@@ -1,45 +1,42 @@
 #include <stdio.h>
-#include <stdio_ext.h>
 #include <stdlib.h>
-#include <string.h>
-#include <ctype.h>
 #include "Controller.h"
-#include "LinkedList.h"
 #include "ePais.h"
+#include <time.h>
 
-int controller_loadFromText(char* path , LinkedList* pArrayListPais)
+int controller_loadFromText(char* path , LinkedList* pArrayListePais)
 {
     int retorno = -1;
-    char idAux[900];
-    char nameAux[900];
-    char recuperadosAux[900];
-    char infectadosAux[900];
-    char muertosAux[900];
-
+    char idAux[300];
+    char nombreAux[300];
+    char recuperadosAux[300];
+    char infectadosAux[300];
+    char muertosAux[300];
     FILE* fpArchivo;
     ePais* paisAux = NULL;
 
-    if( pArrayListPais != NULL && path != NULL)
+    if( pArrayListePais != NULL && path != NULL)
     {
         fpArchivo = fopen(path, "r");
 
         if( fpArchivo != NULL )
         {
+            // LECTURA FANTASMA PARA SALTEAR EL ENCABEZADO
+            fscanf(fpArchivo, "%[^,],%[^,],%[^,],%[^,],%[^\n]\n", idAux, nombreAux, recuperadosAux, infectadosAux, muertosAux);
+
             do
             {
-                if( fscanf(fpArchivo, "%[^,],%[^,],%[^,],%[^,],%[^\n]\n", idAux, nameAux, recuperadosAux, infectadosAux, muertosAux) == 5 )
+                if( fscanf(fpArchivo, "%[^,],%[^,],%[^,],%[^,],%[^\n]\n", idAux, nombreAux, recuperadosAux, infectadosAux, muertosAux) == 5 )
                 {
-                    paisAux = pais_newParametrosChar(idAux, nameAux, recuperadosAux, infectadosAux, muertosAux);
+                    paisAux = ePais_newParametros(idAux, nombreAux, recuperadosAux, infectadosAux, muertosAux);
 
                     if( paisAux != NULL )
                     {
-                        ll_add(pArrayListPais, paisAux);
+                        ll_add(pArrayListePais, paisAux);
                     }
                 }
             }
             while( !feof(fpArchivo) );
-
-            controller_listPais(pArrayListPais);
 
             fclose(fpArchivo);
             retorno = 0;
@@ -53,21 +50,30 @@ int controller_loadFromText(char* path , LinkedList* pArrayListPais)
     return retorno;
 }
 
-int controller_listPais(LinkedList* pArrayListPais)
+int controller_ListePais(LinkedList* pArrayListePais)
 {
     int retorno = -1;
-    ePais* paisAux = NULL;
-    int arrayLen = ll_len(pArrayListPais);
+    ePais* pePaisAux = NULL;
+    int arrayLen = ll_len(pArrayListePais);
 
-    if( pArrayListPais != NULL )
+    if( pArrayListePais != NULL )
     {
+        printf("\n\n");
+
+        printf("    ###################################################\n");
+        printf("    ################## LISTA DE PAISES ################\n");
+        printf("    ###################################################\n\n");
+
+        printf("   ID     |       Nombre       |  Recuperados  |  Infectados  |  Muertos  \n");
+        printf("--------------------------------------------------------------------------\n\n");
+
         for( int i=0; i<arrayLen; i++ )
         {
-            paisAux = (ePais*) ll_get(pArrayListPais, i);
+            pePaisAux = (ePais*) ll_get(pArrayListePais, i);
 
-            if( paisAux != NULL )
+            if( pePaisAux != NULL )
             {
-                printPais( paisAux );
+                printePais( pePaisAux );
             }
         }
 
@@ -79,19 +85,19 @@ int controller_listPais(LinkedList* pArrayListPais)
     return retorno;
 }
 
-int controller_saveAsText(char* path , LinkedList* pArrayListPais)
+int controller_saveAsText(char* path , LinkedList* pArrayListePais)
 {
     int retorno = -1;
     FILE* fpArchivo;
-    int arrayLen = ll_len(pArrayListPais);
-    ePais* paisAux = NULL;
+    int arrayLen = ll_len(pArrayListePais);
+    ePais* pePaisAux = NULL;
     int idAux;
-    char nameAux[900];
+    char nombreAux[128];
     int recuperadosAux;
     int infectadosAux;
     int muertosAux;
 
-    if( pArrayListPais != NULL && path != NULL)
+    if( pArrayListePais != NULL && path != NULL)
     {
         fpArchivo = fopen(path, "w");
 
@@ -99,23 +105,89 @@ int controller_saveAsText(char* path , LinkedList* pArrayListPais)
         {
             for( int i=0; i < arrayLen; i++ )
             {
-                paisAux = (ePais*) ll_get(pArrayListPais, i);
+                pePaisAux = (ePais*) ll_get(pArrayListePais, i);
 
-                if( paisAux != NULL )
+                if( pePaisAux != NULL )
                 {
-                    if( ePais_getId(paisAux, &idAux) &&
-                        ePais_getNombre(paisAux, nameAux) &&
-                        ePais_getRecuperados(paisAux, &recuperadosAux) &&
-                        ePais_getInfectados(paisAux, &infectadosAux) &&
-                        ePais_getMuertos(paisAux, &muertosAux) )
+                    if( ePais_getId(pePaisAux, &idAux) &&
+                        ePais_getNombre(pePaisAux, nombreAux) &&
+                        ePais_getRecuperados(pePaisAux, &recuperadosAux) &&
+                        ePais_getInfectados(pePaisAux, &infectadosAux) &&
+                        ePais_getMuertos(pePaisAux, &muertosAux) )
                     {
-                        fprintf(fpArchivo, "%d,%s,%d,%d,%d\n", idAux, nameAux, recuperadosAux, infectadosAux, muertosAux);
+                        fprintf(fpArchivo, "%d,%s,%d,%d,%d\n", idAux, nombreAux, recuperadosAux, infectadosAux, muertosAux);
                     }
                 }
             }
 
             fclose(fpArchivo);
             retorno = 0;
+        }
+    }
+
+    return retorno;
+}
+
+int getRandom(int minimo, int maximo)
+{
+     int aleatorio;
+
+     aleatorio = rand()%(maximo + 1)+minimo;
+
+     return aleatorio;
+}
+
+void controller_getMasCastigados(LinkedList* pArrayListePais)
+{
+    int mayorCantMuertos = mayorCantidadDeMuertos(pArrayListePais);
+    int cantMuertosAux;
+    int arrayLen = ll_len(pArrayListePais);
+    ePais* paisAux = NULL;
+
+    if( pArrayListePais != NULL )
+    {
+
+        printf("\n\n     ========> EL O LOS PAISES MAS CASTIGADOS <========== \n\n");
+        printf(" ID     |       Nombre       |  Recuperados  |  Infectados  |  Muertos  \n");
+        printf("--------------------------------------------------------------------------\n\n");
+
+        for( int i = 0; i < arrayLen; i++ )
+        {
+            paisAux = (ePais*) ll_get(pArrayListePais, i);
+            ePais_getMuertos(paisAux, &cantMuertosAux);
+
+            if( cantMuertosAux == mayorCantMuertos )
+            {
+                printePais(paisAux);
+            }
+        }
+
+        printf("\n\n");
+
+    }
+
+}
+
+int mayorCantidadDeMuertos(LinkedList* pArrayListePais)
+{
+    ePais* paisAux = NULL;
+    int retorno, cantComparar;
+    int arrayLen = ll_len(pArrayListePais);
+
+    if( pArrayListePais != NULL )
+    {
+        paisAux = (ePais*) ll_get(pArrayListePais, 0);
+        ePais_getMuertos(paisAux, &retorno);
+
+        for( int i = 1; i < arrayLen; i++ )
+        {
+            paisAux = (ePais*) ll_get(pArrayListePais, i);
+            ePais_getMuertos(paisAux, &cantComparar);
+
+            if( cantComparar > retorno )
+            {
+                retorno = cantComparar;
+            }
         }
     }
 

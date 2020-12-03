@@ -540,7 +540,7 @@ LinkedList* ll_filter(LinkedList* this, int(*pFunc)(void*))
 }
 
 
-/** \brief
+/** \brief Retorna una nueva lista con los elementos que hacen que pFunc retorne 1
  *
  * \param this Lista a filtrar
  * \param pFunc Funcion que sabe asignar a cada elemento de this
@@ -548,7 +548,7 @@ LinkedList* ll_filter(LinkedList* this, int(*pFunc)(void*))
                                 (puntero a la nueva lista) Si ok
  *
  */
-LinkedList* ll_map (LinkedList* this, void*(*pFunc) (void* pElement))
+LinkedList* ll_map(LinkedList* this, void*(*pFunc) (void* pElement))
 {
     LinkedList* listaMapeada = NULL;
     void* elementAux = NULL;

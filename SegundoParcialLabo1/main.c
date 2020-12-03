@@ -1,12 +1,10 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <ctype.h>
-#include <string.h>
-#include <stdio_ext.h>
 #include <time.h>
 #include "LinkedList.h"
 #include "ePais.h"
 #include "Controller.h"
+#include "aux.h"
 
 
 
@@ -21,29 +19,12 @@
  */
 int menu();
 
-/** \brief Obtener un char (S/N) de confirmacion
- *
- * \param mensajePedir char*
- * \param mensajeError char*
- * \return char Caracter indicado por el usuario (S/N)
- *
- */
-char getConfirmacion(char* mensajePedir, char* mensajeError);
-
-/** \brief Obtener una cadena hasta el enter.
- *
- * \param cadena char*
- * \param mensajePedir char*
- * \return int Entero que indica si hubo errores.
- *
- */
-int getCadena(char* cadena, char* mensajePedir);
-
 
 
 
 
 /****************** FUNCION MAIN ********************/
+
 int main()
 {
     srand(time(NULL));
@@ -53,8 +34,6 @@ int main()
     char path[100];
 
     LinkedList* listaPaises = ll_newLinkedList();
-    LinkedList* paisesExitosos = ll_newLinkedList();
-    LinkedList* paisesEnElHorno = ll_newLinkedList();
 
 
 
@@ -69,7 +48,7 @@ int main()
             case 1:
                 system("clear");
 
-                getCadena(path, "Ingrese nombre del archivo: ");
+                aux_getCadena(path, "Ingrese nombre del archivo: ");
 
                 if( !controller_loadFromText(path, listaPaises) )
                 {
@@ -97,9 +76,7 @@ int main()
                 system("clear");
                 if( !ll_isEmpty(listaPaises) )
                 {
-                    ll_map(listaPaises, ePais_setRandomValues);
-                    printf("\n\n\n    =======> LISTA ACTUALIZADA CON VALORES SETEADOS <======== \n\n\n");
-                    controller_ListePais(listaPaises);
+                    controller_MapePais(listaPaises);
                 }
                 else
                 {
@@ -111,20 +88,7 @@ int main()
                 system("clear");
                 if( !ll_isEmpty(listaPaises) )
                 {
-                    paisesExitosos = ll_filter(listaPaises, ePais_getPaisExitoso);
-
-                    printf("\n\n\n    =======> LISTA DE PAISES EXITOSOS <======== \n\n\n");
-                    controller_ListePais(paisesExitosos);
-                    printf("\n\n\n");
-
-                    if( !controller_saveAsText("paisesExitosos.csv", paisesExitosos) )
-                    {
-                        printf("ARCHIVO paisesExitosos.csv GENERADO CORRECTAMENTE.\n\n");
-                    }
-                    else
-                    {
-                        printf("SE PRODUJO UN ERROR GENERANDO EL ARCHIVO paisesExitosos.csv\n\n");
-                    }
+                    controller_FilterAndSavePaisesExitosos(listaPaises);
                 }
                 else
                 {
@@ -136,20 +100,7 @@ int main()
                 system("clear");
                 if( !ll_isEmpty(listaPaises) )
                 {
-                    paisesEnElHorno = ll_filter(listaPaises, ePais_getPaisEnElHorno);
-
-                    printf("\n\n\n    =======> LISTA DE PAISES EN EL HORNO <======== \n\n\n");
-                    controller_ListePais(paisesEnElHorno);
-                    printf("\n\n\n");
-
-                    if( !controller_saveAsText("paisesEnElHorno.csv", paisesEnElHorno) )
-                    {
-                        printf("ARCHIVO paisesEnElHorno.csv GENERADO CORRECTAMENTE.\n\n");
-                    }
-                    else
-                    {
-                        printf("SE PRODUJO UN ERROR GENERANDO EL ARCHIVO paisesEnElHorno.csv\n\n");
-                    }
+                    controller_FilterAndSavePaisesEnElHorno(listaPaises);
                 }
                 else
                 {
@@ -161,7 +112,7 @@ int main()
                 system("clear");
                 if( !ll_isEmpty(listaPaises) )
                 {
-                    if( !ll_sort(listaPaises,ePais_sortByInfected,0) )
+                    if( !ll_sort( listaPaises, ePais_sortByInfected, 0 ) )
                     {
                         printf("\n\nSE ORDENO CORRECTAMENTE\n\n");
                     }
@@ -189,7 +140,7 @@ int main()
                 break;
 
             case 8:
-                confirmaSalir = getConfirmacion("Seguro que desea salir? (s - si / n - no): ", "Error. Ingrese una opcion valida: ");
+                confirmaSalir = aux_getConfirmacion("Seguro que desea salir? (s - si / n - no): ", "Error. Ingrese una opcion valida: ");
                 break;
 
             default:
@@ -238,44 +189,5 @@ int menu()
     scanf("%d", &opcion);
 
     return opcion;
-}
-
-char getConfirmacion(char* mensajePedir, char* mensajeError)
-{
-    char confirmar;
-
-    if( mensajePedir != NULL && mensajeError != NULL )
-    {
-        printf("\n\n%s\n", mensajePedir);
-        __fpurge(stdin);
-        confirmar = getchar();
-        confirmar = toupper(confirmar);
-
-        while( confirmar != 'S' && confirmar != 'N' )
-        {
-            printf("\n%s\n", mensajeError);
-            __fpurge(stdin);
-            confirmar = getchar();
-            confirmar = toupper(confirmar);
-        }
-    }
-
-    return confirmar;
-}
-
-int getCadena(char* cadena, char* mensajePedir)
-{
-    int todoOk = 0;
-
-    if( cadena != NULL && mensajePedir != NULL )
-    {
-        printf("\n%s", mensajePedir);
-        __fpurge(stdin);
-        scanf("%[^\n]", cadena);
-
-        todoOk = 1;
-    }
-
-    return todoOk;
 }
 

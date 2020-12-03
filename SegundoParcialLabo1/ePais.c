@@ -3,6 +3,7 @@
 #include <string.h>
 #include "ePais.h"
 #include "Controller.h"
+#include "aux.h"
 
 ePais* ePais_new()
 {
@@ -213,9 +214,9 @@ void* ePais_setRandomValues(void* pePais)
 
     if( pePais != NULL )
     {
-        recuperadosAux = getRandom(5000, 10000);
-        infectadosAux = getRandom(4000, 20000);
-        muertosAux = getRandom(1000, 50000);
+        recuperadosAux = aux_getRandom(5000, 10000);
+        infectadosAux = aux_getRandom(4000, 20000);
+        muertosAux = aux_getRandom(1000, 50000);
 
         ePais_setRecuperados( (ePais*) pePais, recuperadosAux );
         ePais_setInfectados( (ePais*) pePais, infectadosAux );

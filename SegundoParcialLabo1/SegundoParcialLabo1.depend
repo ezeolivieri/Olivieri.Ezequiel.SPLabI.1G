@@ -1,27 +1,26 @@
 # depslib dependency file v1.0
-1606857295 source:/home/ezequielo/Escritorio/Olivieri.Ezequiel.SPLabI.1G/SegundoParcialLabo1/main.c
+1607015808 source:/home/ezequielo/Escritorio/Olivieri.Ezequiel.SPLabI.1G/SegundoParcialLabo1/main.c
 	<stdio.h>
 	<stdlib.h>
-	<ctype.h>
-	<string.h>
-	<stdio_ext.h>
 	<time.h>
 	"LinkedList.h"
 	"ePais.h"
 	"Controller.h"
+	"aux.h"
 
-1606858467 source:/home/ezequielo/Escritorio/Olivieri.Ezequiel.SPLabI.1G/SegundoParcialLabo1/Controller.c
+1607015644 source:/home/ezequielo/Escritorio/Olivieri.Ezequiel.SPLabI.1G/SegundoParcialLabo1/Controller.c
 	<stdio.h>
 	<stdlib.h>
 	"Controller.h"
 	"ePais.h"
-	<time.h>
+	"Parser.h"
+	"aux.h"
 
 1606852889 /home/ezequielo/Escritorio/Olivieri.Ezequiel.SPLabI.1G/SegundoParcialLabo1/LinkedList.h
 
 1606857317 /home/ezequielo/Escritorio/Olivieri.Ezequiel.SPLabI.1G/SegundoParcialLabo1/ePais.h
 
-1606858495 /home/ezequielo/Escritorio/Olivieri.Ezequiel.SPLabI.1G/SegundoParcialLabo1/Controller.h
+1607015675 /home/ezequielo/Escritorio/Olivieri.Ezequiel.SPLabI.1G/SegundoParcialLabo1/Controller.h
 	"LinkedList.h"
 
 1606854587 source:/home/ezequielo/Escritorio/Olivieri.Ezequiel.SPLabI.1G/SegundoParcialLabo1/LinkedList.c
@@ -29,10 +28,26 @@
 	<stdlib.h>
 	"LinkedList.h"
 
-1606857318 source:/home/ezequielo/Escritorio/Olivieri.Ezequiel.SPLabI.1G/SegundoParcialLabo1/ePais.c
+1607015652 source:/home/ezequielo/Escritorio/Olivieri.Ezequiel.SPLabI.1G/SegundoParcialLabo1/ePais.c
 	<stdio.h>
 	<stdlib.h>
 	<string.h>
 	"ePais.h"
 	"Controller.h"
+	"aux.h"
+
+1607013748 /home/ezequielo/Escritorio/Olivieri.Ezequiel.SPLabI.1G/SegundoParcialLabo1/Parser.h
+
+1607014233 source:/home/ezequielo/Escritorio/Olivieri.Ezequiel.SPLabI.1G/SegundoParcialLabo1/Parser.c
+	<stdio.h>
+	<stdlib.h>
+	"LinkedList.h"
+	"ePais.h"
+
+1607015854 source:/home/ezequielo/Escritorio/Olivieri.Ezequiel.SPLabI.1G/SegundoParcialLabo1/aux.c
+	<stdlib.h>
+	<ctype.h>
+	<stdio_ext.h>
+
+1607015680 /home/ezequielo/Escritorio/Olivieri.Ezequiel.SPLabI.1G/SegundoParcialLabo1/aux.h
 

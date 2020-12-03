@@ -2,44 +2,27 @@
 #include <stdlib.h>
 #include "Controller.h"
 #include "ePais.h"
-#include <time.h>
+#include "Parser.h"
+#include "aux.h"
 
 int controller_loadFromText(char* path , LinkedList* pArrayListePais)
 {
-    int retorno = -1;
-    char idAux[300];
-    char nombreAux[300];
-    char recuperadosAux[300];
-    char infectadosAux[300];
-    char muertosAux[300];
-    FILE* fpArchivo;
-    ePais* paisAux = NULL;
+    int todoOk = -1;
 
-    if( pArrayListePais != NULL && path != NULL)
+    FILE* fpArchivo;
+
+    if( path != NULL && pArrayListePais != NULL )
     {
         fpArchivo = fopen(path, "r");
 
         if( fpArchivo != NULL )
         {
-            // LECTURA FANTASMA PARA SALTEAR EL ENCABEZADO
-            fscanf(fpArchivo, "%[^,],%[^,],%[^,],%[^,],%[^\n]\n", idAux, nombreAux, recuperadosAux, infectadosAux, muertosAux);
-
-            do
+            if( !parser_ePaisFromText(fpArchivo, pArrayListePais) )
             {
-                if( fscanf(fpArchivo, "%[^,],%[^,],%[^,],%[^,],%[^\n]\n", idAux, nombreAux, recuperadosAux, infectadosAux, muertosAux) == 5 )
-                {
-                    paisAux = ePais_newParametros(idAux, nombreAux, recuperadosAux, infectadosAux, muertosAux);
-
-                    if( paisAux != NULL )
-                    {
-                        ll_add(pArrayListePais, paisAux);
-                    }
-                }
+                todoOk = 0;
             }
-            while( !feof(fpArchivo) );
 
             fclose(fpArchivo);
-            retorno = 0;
         }
         else
         {
@@ -47,7 +30,7 @@ int controller_loadFromText(char* path , LinkedList* pArrayListePais)
         }
     }
 
-    return retorno;
+    return todoOk;
 }
 
 int controller_ListePais(LinkedList* pArrayListePais)
@@ -89,13 +72,6 @@ int controller_saveAsText(char* path , LinkedList* pArrayListePais)
 {
     int retorno = -1;
     FILE* fpArchivo;
-    int arrayLen = ll_len(pArrayListePais);
-    ePais* pePaisAux = NULL;
-    int idAux;
-    char nombreAux[128];
-    int recuperadosAux;
-    int infectadosAux;
-    int muertosAux;
 
     if( pArrayListePais != NULL && path != NULL)
     {
@@ -103,43 +79,21 @@ int controller_saveAsText(char* path , LinkedList* pArrayListePais)
 
         if( fpArchivo != NULL )
         {
-            for( int i=0; i < arrayLen; i++ )
+            if( !parser_saveePaisAsText( fpArchivo, pArrayListePais ) )
             {
-                pePaisAux = (ePais*) ll_get(pArrayListePais, i);
-
-                if( pePaisAux != NULL )
-                {
-                    if( ePais_getId(pePaisAux, &idAux) &&
-                        ePais_getNombre(pePaisAux, nombreAux) &&
-                        ePais_getRecuperados(pePaisAux, &recuperadosAux) &&
-                        ePais_getInfectados(pePaisAux, &infectadosAux) &&
-                        ePais_getMuertos(pePaisAux, &muertosAux) )
-                    {
-                        fprintf(fpArchivo, "%d,%s,%d,%d,%d\n", idAux, nombreAux, recuperadosAux, infectadosAux, muertosAux);
-                    }
-                }
+                retorno = 0;
             }
 
             fclose(fpArchivo);
-            retorno = 0;
         }
     }
 
     return retorno;
 }
 
-int getRandom(int minimo, int maximo)
-{
-     int aleatorio;
-
-     aleatorio = rand()%(maximo + 1)+minimo;
-
-     return aleatorio;
-}
-
 void controller_getMasCastigados(LinkedList* pArrayListePais)
 {
-    int mayorCantMuertos = mayorCantidadDeMuertos(pArrayListePais);
+    int mayorCantMuertos = getMayorCantidadDeMuertos(pArrayListePais);
     int cantMuertosAux;
     int arrayLen = ll_len(pArrayListePais);
     ePais* paisAux = NULL;
@@ -168,7 +122,7 @@ void controller_getMasCastigados(LinkedList* pArrayListePais)
 
 }
 
-int mayorCantidadDeMuertos(LinkedList* pArrayListePais)
+int getMayorCantidadDeMuertos(LinkedList* pArrayListePais)
 {
     ePais* paisAux = NULL;
     int retorno, cantComparar;
@@ -192,4 +146,60 @@ int mayorCantidadDeMuertos(LinkedList* pArrayListePais)
     }
 
     return retorno;
+}
+
+void controller_MapePais(LinkedList* pArrayListePais)
+{
+    if( pArrayListePais != NULL )
+    {
+        ll_map(pArrayListePais, ePais_setRandomValues);
+        printf("\n\n\n    =======> LISTA ACTUALIZADA CON VALORES SETEADOS <======== \n\n\n");
+        controller_ListePais(pArrayListePais);
+    }
+}
+
+void controller_FilterAndSavePaisesExitosos(LinkedList* pArrayListePais)
+{
+    LinkedList* paisesExitosos = ll_newLinkedList();
+
+    if( pArrayListePais != NULL )
+    {
+        paisesExitosos = ll_filter(pArrayListePais, ePais_getPaisExitoso);
+
+        printf("\n\n\n    =======> LISTA DE PAISES EXITOSOS <======== \n\n\n");
+        controller_ListePais(paisesExitosos);
+        printf("\n\n\n");
+
+        if( !controller_saveAsText("paisesExitosos.csv", paisesExitosos) )
+        {
+            printf("ARCHIVO paisesExitosos.csv GENERADO CORRECTAMENTE.\n\n");
+        }
+        else
+        {
+            printf("SE PRODUJO UN ERROR GENERANDO EL ARCHIVO paisesExitosos.csv\n\n");
+        }
+    }
+}
+
+void controller_FilterAndSavePaisesEnElHorno(LinkedList* pArrayListePais)
+{
+    LinkedList* paisesEnElHorno = ll_newLinkedList();
+
+    if( pArrayListePais != NULL )
+    {
+        paisesEnElHorno = ll_filter(pArrayListePais, ePais_getPaisEnElHorno);
+
+        printf("\n\n\n    =======> LISTA DE PAISES EN EL HORNO <======== \n\n\n");
+        controller_ListePais(paisesEnElHorno);
+        printf("\n\n\n");
+
+        if( !controller_saveAsText("paisesEnElHorno.csv", paisesEnElHorno) )
+        {
+            printf("ARCHIVO paisesEnElHorno.csv GENERADO CORRECTAMENTE.\n\n");
+        }
+        else
+        {
+            printf("SE PRODUJO UN ERROR GENERANDO EL ARCHIVO paisesEnElHorno.csv\n\n");
+        }
+    }
 }
